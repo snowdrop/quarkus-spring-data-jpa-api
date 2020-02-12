@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>me.snowdrop</groupId>
+  <artifactId>quarkus-spring-data-jpa-api</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
+
+  <properties>
+    <spring-boot-bom.version>2.1.12.Final</spring-boot-bom.version>
+    <maven-shade-plugin.version>3.2.1</maven-shade-plugin.version>
+  </properties>
+
+  <dependencyManagement>
+    <dependencies>
+      <dependency>
+        <groupId>me.snowdrop</groupId>
+        <artifactId>spring-boot-bom</artifactId>
+        <version>${spring-boot-bom.version}</version>
+        <type>pom</type>
+        <scope>import</scope>
+      </dependency>
+    </dependencies>
+  </dependencyManagement>
+  <dependencies>
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-context</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-jpa</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>org.springframework.data</groupId>
+      <artifactId>spring-data-commons</artifactId>
+    </dependency>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-shade-plugin</artifactId>
+        <version>${maven-shade-plugin.version}</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>shade</goal>
+            </goals>
+            <configuration>
+              <artifactSet>
+                <includes>
+                  <include>org.springframework:spring-context</include>
+                  <include>org.springframework.data:spring-data-jpa</include>
+                  <include>org.springframework.data:spring-data-commons</include>
+                </includes>
+              </artifactSet>
+              <filters>
+                <filter>
+                  <artifact>org.springframework.data:spring-data-jpa</artifact>
+                  <includes>
+                    <!-- Used in Quarkus -->
+                    <include>org/springframework/data/jpa/repository/Query**.class</include>
+                    <include>org/springframework/data/jpa/repository/JpaRepository**.class</include>
+                    <include>org/springframework/data/jpa/repository/Modifying**.class</include>
+                  </includes>
+                </filter>
+                <filter>
+                  <artifact>org.springframework.data:spring-data-commons</artifact>
+                  <includes>
+                    <!-- Used in Quarkus -->
+                    <include>org/springframework/data/repository/Repository**.class</include>
+                    <include>org/springframework/data/util/Streamable**.class</include>
+                    <include>org/springframework/data/domain/Page**.class</include>
+                    <include>org/springframework/data/domain/PageRequest**.class</include>
+                    <include>org/springframework/data/domain/Pageable**.class</include>
+                    <include>org/springframework/data/domain/Slice**.class</include>
+                    <include>org/springframework/data/domain/Sort**.class</include>
+                    <include>org/springframework/data/domain/Auditable**.class</include>
+                    <include>org/springframework/data/domain/Persistable**.class</include>
+                    <include>org/springframework/data/repository/CrudRepository**.class</include>
+                    <include>org/springframework/data/repository/PagingAndSortingRepository**.class</include>
+                    <include>org/springframework/data/repository/NoRepositoryBean**.class</include>
+                    <include>org/springframework/data/repository/query/QueryByExampleExecutor**.class</include>
+                    <include>org/springframework/data/repository/query/Param**.class</include>
+                    <!-- Transitive dependencies -->
+                    <include>org/springframework/data/annotation/QueryAnnotation**.class</include>
+                    <include>org/springframework/data/domain/Example**.class</include>
+                    <include>org/springframework/data/domain/AbstractPageRequest**.class</include>
+                  </includes>
+                </filter>
+                <filter>
+                  <artifact>org.springframework:spring-context</artifact>
+                  <includes>
+                    <include>org/springframework/stereotype/Indexed**.class</include>
+                  </includes>
+                </filter>
+              </filters>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
